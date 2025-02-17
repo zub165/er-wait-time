@@ -383,6 +383,38 @@
             color: var(--primary-color);
             display: none;
         }
+
+        /* Add to your existing styles */
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            background: #f5f5f5;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+        }
+
+        .no-results i {
+            font-size: 48px;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .no-results p {
+            color: #666;
+            margin: 10px 0;
+        }
+
+        .loading:after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60% { content: '...'; }
+            100% { content: '...'; }
+        }
     </style>
 </head>
 <body>
@@ -553,6 +585,192 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCI_RHBNmNwpNpDoUPyZFNPNWUYQmr4QJk&libraries=places"></script>
 
     <script>
+        // Add this at the start of your JavaScript section
+        let placesService;
+        let autocomplete;
+
+        // Initialize Google Services
+        function initGoogleServices() {
+            try {
+                // Create map div for Places Service
+                const mapDiv = document.createElement('div');
+                mapDiv.style.display = 'none';
+                document.body.appendChild(mapDiv);
+                
+                // Initialize map and Places Service
+                const map = new google.maps.Map(mapDiv, { center: { lat: 0, lng: 0 }, zoom: 1 });
+                placesService = new google.maps.places.PlacesService(map);
+                
+                // Initialize Autocomplete
+                const input = document.getElementById('location-input');
+                autocomplete = new google.maps.places.Autocomplete(input, {
+                    types: ['geocode'],
+                    fields: ['geometry', 'formatted_address']
+                });
+                
+                // Add place_changed listener
+                autocomplete.addListener('place_changed', handlePlaceChanged);
+                
+                return true;
+            } catch (error) {
+                console.error('Error initializing Google Services:', error);
+                return false;
+            }
+        }
+
+        // Handle place selection
+        function handlePlaceChanged() {
+            const place = autocomplete.getPlace();
+            if (place.geometry) {
+                window.selectedLocation = {
+                    lat: place.geometry.location.lat(),
+                    lng: place.geometry.location.lng()
+                };
+                searchHospitals();
+            }
+        }
+
+        // Update getCurrentLocation
+        function getCurrentLocation() {
+            const locationInput = document.getElementById('location-input');
+            const loadingText = 'Detecting location...';
+            locationInput.value = loadingText;
+            locationInput.disabled = true;
+
+            if (!navigator.geolocation) {
+                locationInput.disabled = false;
+                locationInput.value = '';
+                alert('Geolocation is not supported by your browser. Please enter your location manually.');
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const location = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    
+                    window.selectedLocation = location;
+
+                    const geocoder = new google.maps.Geocoder();
+                    geocoder.geocode({ location: location }, (results, status) => {
+                        locationInput.disabled = false;
+                        
+                        if (status === 'OK' && results[0]) {
+                            locationInput.value = results[0].formatted_address;
+                            searchHospitals();
+                        } else {
+                            locationInput.value = '';
+                            alert('Unable to get your address. Please enter it manually.');
+                        }
+                    });
+                },
+                (error) => {
+                    locationInput.disabled = false;
+                    locationInput.value = '';
+                    handleLocationError(error);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        // Handle location errors
+        function handleLocationError(error) {
+            let message = 'Error getting your location. ';
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    message += 'Please enable location services in your browser settings.';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    message += 'Location information is unavailable.';
+                    break;
+                case error.TIMEOUT:
+                    message += 'Location request timed out.';
+                    break;
+                default:
+                    message += 'Please enter your location manually.';
+            }
+            alert(message);
+        }
+
+        // Update searchHospitals
+        function searchHospitals() {
+            if (!window.selectedLocation) {
+                alert('Please select a location first');
+                return;
+            }
+
+            if (!placesService) {
+                alert('Error: Google Places service not initialized. Please refresh the page.');
+                return;
+            }
+
+            const hospitalList = document.getElementById('hospital-list');
+            const loading = document.getElementById('loading');
+            
+            hospitalList.innerHTML = '';
+            loading.style.display = 'block';
+
+            const radius = document.getElementById('radius-slider').value;
+            const location = window.selectedLocation;
+
+            const request = {
+                location: new google.maps.LatLng(location.lat, location.lng),
+                radius: radius * 1609.34, // Convert miles to meters
+                type: ['hospital'],
+                keyword: 'emergency room'
+            };
+
+            placesService.nearbySearch(request, (results, status) => {
+                loading.style.display = 'none';
+                
+                if (status === google.maps.places.PlacesServiceStatus.OK && results.length > 0) {
+                    displayResults(results);
+                } else if (status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+                    showNoResults('No hospitals found in this area. Try increasing the search radius.');
+                } else {
+                    showNoResults('Error searching for hospitals. Please try again.');
+                    console.error('Places API Error:', status);
+                }
+            });
+        }
+
+        // Show no results message
+        function showNoResults(message) {
+            const hospitalList = document.getElementById('hospital-list');
+            hospitalList.innerHTML = `
+                <div class="no-results">
+                    <i class="fas fa-hospital-alt"></i>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        // Update window.onload
+        window.onload = function() {
+            if (!initGoogleServices()) {
+                alert('Error initializing Google services. Please refresh the page.');
+                return;
+            }
+
+            // Add location button
+            addLocationButton();
+            
+            // Try to get location automatically
+            getCurrentLocation();
+            
+            // Check login state
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+            }
+        };
+
         // Function to handle symptom selection
         function selectSymptom(button, symptom, response) {
             // Remove 'selected' class from all buttons in the same symptom item
@@ -638,40 +856,6 @@
         radiusSlider.addEventListener('input', function() {
             radiusValue.textContent = this.value;
         });
-
-        // Search for hospitals
-        function searchHospitals() {
-            if (!window.selectedLocation) {
-                alert('Please select a location first');
-                return;
-            }
-
-            const radius = document.getElementById('radius-slider').value;
-            const location = window.selectedLocation;
-
-            // Show loading indicator
-            document.getElementById('loading').style.display = 'block';
-
-            // Example of how to use Google Places API to search for hospitals
-            const service = new google.maps.places.PlacesService(document.createElement('div'));
-            
-            const request = {
-                location: new google.maps.LatLng(location.lat, location.lng),
-                radius: radius * 1609.34, // Convert miles to meters
-                type: ['hospital']
-            };
-
-            service.nearbySearch(request, (results, status) => {
-                // Hide loading indicator
-                document.getElementById('loading').style.display = 'none';
-
-                if (status === google.maps.places.PlacesServiceStatus.OK) {
-                    displayResults(results);
-                } else {
-                    alert('No hospitals found. Please try a different location or radius.');
-                }
-            });
-        }
 
         // Display hospital results
         function displayResults(hospitals) {
@@ -759,51 +943,6 @@
             return (R * c).toFixed(1);
         }
 
-        // Initialize Google Places Autocomplete when the page loads
-        window.onload = initAutocomplete;
-
-        // Add this before your existing JavaScript
-        
-        // Demo credentials (In production, these should be handled securely on a server)
-        const validCredentials = {
-            username: 'admin',
-            password: 'ertime911'
-        };
-
-        // Handle login
-        document.getElementById('loginForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorMessage = document.getElementById('errorMessage');
-            
-            if (username === validCredentials.username && password === validCredentials.password) {
-                // Store login state
-                sessionStorage.setItem('isLoggedIn', 'true');
-                
-                // Show main content and hide login
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
-                
-                // Clear error message if it was shown
-                errorMessage.style.display = 'none';
-            } else {
-                // Show error message
-                errorMessage.style.display = 'block';
-                // Clear password field
-                document.getElementById('password').value = '';
-            }
-        });
-
-        // Check login state on page load
-        window.addEventListener('load', function() {
-            if (sessionStorage.getItem('isLoggedIn') === 'true') {
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
-            }
-        });
-
         // Add logout functionality
         function logout() {
             sessionStorage.removeItem('isLoggedIn');
@@ -811,39 +950,6 @@
             document.getElementById('mainContent').style.display = 'none';
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
-        }
-
-        // Add this function after initAutocomplete
-        function getCurrentLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const location = {
-                            lat: position.coords.latitude,
-                            lng: position.coords.longitude
-                        };
-                        
-                        // Store location for later use
-                        window.selectedLocation = location;
-
-                        // Convert coordinates to address using Geocoding
-                        const geocoder = new google.maps.Geocoder();
-                        geocoder.geocode({ location: location }, (results, status) => {
-                            if (status === 'OK' && results[0]) {
-                                document.getElementById('location-input').value = results[0].formatted_address;
-                            } else {
-                                alert('Unable to retrieve address. Please enter manually.');
-                            }
-                        });
-                    },
-                    (error) => {
-                        console.error('Error getting location:', error);
-                        alert('Please enable location services or enter your location manually.');
-                    }
-                );
-            } else {
-                alert('Geolocation is not supported by your browser. Please enter your location manually.');
-            }
         }
 
         // Add a button for getting current location
@@ -856,19 +962,6 @@
             button.onclick = getCurrentLocation;
             locationInput.appendChild(button);
         }
-
-        // Update the initialization
-        window.onload = function() {
-            initAutocomplete();
-            addLocationButton();
-            getCurrentLocation(); // Try to get location automatically
-            
-            // Check login state (existing code)
-            if (sessionStorage.getItem('isLoggedIn') === 'true') {
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
-            }
-        };
 
         // Add function to get travel time
         async function getTravelTime(origin, destination) {

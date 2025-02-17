@@ -71,6 +71,7 @@
             border-radius: var(--border-radius);
             border: 1px solid #ddd;
             margin-bottom: 15px;
+            position: relative;
         }
 
         .location-input i {
@@ -222,6 +223,166 @@
         .main-content {
             display: none;
         }
+
+        .current-location-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .current-location-btn:hover {
+            color: #1976D2;
+        }
+
+        /* Add to your existing styles */
+        .travel-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .clock-animation {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .clock-animation i {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--primary-color);
+            font-size: 16px;
+            z-index: 1;
+        }
+
+        .clock-timer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .clock-circle {
+            fill: none;
+            stroke: var(--primary-color);
+            stroke-width: 2;
+            stroke-dasharray: 94.2;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+
+        .time-display {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-top: 4px;
+        }
+
+        .time-details {
+            flex: 1;
+        }
+
+        .time-details p {
+            margin: 2px 0;
+        }
+
+        .travel-time {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .wait-info {
+            text-align: center;
+            background: #E3F2FD;
+            padding: 10px;
+            border-radius: var(--border-radius);
+        }
+
+        .wait-time {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .total-time {
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .actions button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: all 0.3s;
+        }
+
+        .direction-btn {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .register-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        @keyframes countdown {
+            from {
+                stroke-dashoffset: 94.2;
+            }
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        /* Improve responsive design */
+        @media (max-width: 768px) {
+            .hospital-card {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Loading indicator */
+        .loading {
+            text-align: center;
+            font-size: 1.2em;
+            color: var(--primary-color);
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -246,111 +407,54 @@
         </form>
     </div>
 
-    <!-- Main Content (existing content) -->
-    <div class="main-content" id="mainContent">
-        <div class="container">
-            <!-- Add this section before the existing patient registration form -->
-            <div class="er-wait-section">
-                <div class="er-header">
-                    <img src="clock-icon.svg" alt="Clock">
-                    <h2>ER Wait Times</h2>
-                </div>
-
-                <div class="er-search-container">
-                    <div class="location-input">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <input type="text" id="location-input" placeholder="Enter your location">
-                    </div>
-
-                    <div class="radius-container">
-                        <label>Search radius: <span id="radius-value">10</span> miles</label>
-                        <input type="range" class="radius-slider" min="1" max="50" value="10" id="radius-slider">
-                    </div>
-
-                    <button class="search-button" onclick="searchHospitals()">
-                        Find Emergency Rooms
+    <!-- Main Content -->
+    <div class="container main-content" id="mainContent">
+        <div class="er-wait-section">
+            <div class="er-header">
+                <img src="clock-icon.svg" alt="ER Wait Time">
+                <h2>ER Wait Times</h2>
+            </div>
+            <div class="er-search-container">
+                <div class="location-input">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <input type="text" id="location-input" placeholder="Enter your location">
+                    <button type="button" class="current-location-btn" onclick="getCurrentLocation()">
+                        <i class="fas fa-crosshairs"></i>
                     </button>
                 </div>
-
-                <div class="hospital-list" id="hospital-list">
-                    <!-- Hospital results will be dynamically inserted here -->
-                </div>
+                <label for="radius-slider">Search radius: <span id="radius-value">10</span> miles</label>
+                <input type="range" id="radius-slider" min="1" max="50" value="10">
+                <button class="search-button" onclick="searchHospitals()">Find Emergency Rooms</button>
             </div>
+            <div class="loading" id="loading">Loading hospitals...</div>
+            <div class="hospital-list" id="hospital-list"></div>
+        </div>
 
-            <h1>Patient Registration</h1>
+        <!-- Patient Registration -->
+        <div class="er-wait-section">
+            <h2>Patient Registration</h2>
             <form id="patientForm">
-                <!-- Patient Name -->
                 <label for="patientName">Patient Name:</label>
                 <input type="text" id="patientName" name="patientName" required>
 
-                <!-- Doctor's Information -->
                 <label for="doctorName">Doctor's Name:</label>
                 <input type="text" id="doctorName" name="doctorName" required>
 
-                <!-- Basic Information -->
-                <label for="age">Age:</label>
-                <input type="number" id="age" name="age" required>
+                <label for="address">Address:</label>
+                <textarea id="address" name="address" rows="4" required></textarea>
 
-                <label for="sex">Sex:</label>
-                <select id="sex" name="sex" required>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                </select>
-
-                <label for="dob">Date of Birth:</label>
-                <input type="date" id="dob" name="dob" required>
-
-                <label for="phone">Phone Number:</label>
-                <input type="tel" id="phone" name="phone" required>
-
-                <label for="whatsapp">WhatsApp Number:</label>
-                <input type="tel" id="whatsapp" name="whatsapp">
-
-                <label for="email">Email Address:</label>
-                <input type="email" id="email" name="email" required>
-
-                <!-- Medical History -->
-                <label for="pastMedicalHistory">Past Medical History:</label>
-                <textarea id="pastMedicalHistory" name="pastMedicalHistory" rows="4"></textarea>
-
-                <label for="allergyHistory">Allergy History:</label>
-                <textarea id="allergyHistory" name="allergyHistory" rows="4"></textarea>
-
-                <label for="surgicalHistory">Surgical History:</label>
-                <textarea id="surgicalHistory" name="surgicalHistory" rows="4"></textarea>
-
-                <label for="medicationList">Medication List:</label>
+                <label for="medicationList">Current Medications:</label>
                 <textarea id="medicationList" name="medicationList" rows="4"></textarea>
 
-                <!-- History Tab -->
-                <div class="tabs">
-                    <button type="button" onclick="openTab('symptomsTab')">Main Symptoms</button>
-                </div>
-
-                <div id="symptomsTab" class="tab-content">
-                    <h3>Main Symptoms</h3>
-                    <ul class="symptom-list">
-                        <!-- List of 20 Common Symptoms -->
+                <!-- Symptoms -->
+                <div class="symptom-list">
+                    <h3>Symptoms</h3>
+                    <ul>
                         <li class="symptom-item">
                             <span>Fever</span>
                             <div class="symptom-buttons">
                                 <button class="yes" onclick="selectSymptom(this, 'fever', 'yes')">Yes</button>
                                 <button class="no" onclick="selectSymptom(this, 'fever', 'no')">No</button>
-                            </div>
-                        </li>
-                        <li class="symptom-item">
-                            <span>Cough</span>
-                            <div class="symptom-buttons">
-                                <button class="yes" onclick="selectSymptom(this, 'cough', 'yes')">Yes</button>
-                                <button class="no" onclick="selectSymptom(this, 'cough', 'no')">No</button>
-                            </div>
-                        </li>
-                        <li class="symptom-item">
-                            <span>Headache</span>
-                            <div class="symptom-buttons">
-                                <button class="yes" onclick="selectSymptom(this, 'headache', 'yes')">Yes</button>
-                                <button class="no" onclick="selectSymptom(this, 'headache', 'no')">No</button>
                             </div>
                         </li>
                         <li class="symptom-item">
@@ -361,13 +465,6 @@
                             </div>
                         </li>
                         <li class="symptom-item">
-                            <span>Chest Pain</span>
-                            <div class="symptom-buttons">
-                                <button class="yes" onclick="selectSymptom(this, 'chestPain', 'yes')">Yes</button>
-                                <button class="no" onclick="selectSymptom(this, 'chestPain', 'no')">No</button>
-                            </div>
-                        </li>
-                        <li class="symptom-item">
                             <span>Fatigue</span>
                             <div class="symptom-buttons">
                                 <button class="yes" onclick="selectSymptom(this, 'fatigue', 'yes')">Yes</button>
@@ -375,17 +472,24 @@
                             </div>
                         </li>
                         <li class="symptom-item">
-                            <span>Muscle Aches</span>
+                            <span>Headache</span>
                             <div class="symptom-buttons">
-                                <button class="yes" onclick="selectSymptom(this, 'muscleAches', 'yes')">Yes</button>
-                                <button class="no" onclick="selectSymptom(this, 'muscleAches', 'no')">No</button>
+                                <button class="yes" onclick="selectSymptom(this, 'headache', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'headache', 'no')">No</button>
                             </div>
                         </li>
                         <li class="symptom-item">
-                            <span>Sore Throat</span>
+                            <span>Muscle Pain</span>
                             <div class="symptom-buttons">
-                                <button class="yes" onclick="selectSymptom(this, 'soreThroat', 'yes')">Yes</button>
-                                <button class="no" onclick="selectSymptom(this, 'soreThroat', 'no')">No</button>
+                                <button class="yes" onclick="selectSymptom(this, 'musclePain', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'musclePain', 'no')">No</button>
+                            </div>
+                        </li>
+                        <li class="symptom-item">
+                            <span>Loss of Taste or Smell</span>
+                            <div class="symptom-buttons">
+                                <button class="yes" onclick="selectSymptom(this, 'lossOfTasteOrSmell', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'lossOfTasteOrSmell', 'no')">No</button>
                             </div>
                         </li>
                         <li class="symptom-item">
@@ -393,41 +497,6 @@
                             <div class="symptom-buttons">
                                 <button class="yes" onclick="selectSymptom(this, 'nausea', 'yes')">Yes</button>
                                 <button class="no" onclick="selectSymptom(this, 'nausea', 'no')">No</button>
-                            </div>
-                        </li>
-                        <li class="symptom-item">
-                            <span>Vomiting</span>
-                            <div class="symptom-buttons">
-                                <button class="yes" onclick="selectSymptom(this, 'vomiting', 'yes')">Yes</button>
-                                <button class="no" onclick="selectSymptom(this, 'vomiting', 'no')">No</button>
-                            </div>
-                        </li>
-                        <li class="symptom-item">
-                            <span>Diarrhea</span>
-                            <div class="symptom-buttons">
-                                <button class="yes" onclick="selectSymptom(this, 'diarrhea', 'yes')">Yes</button>
-                                <button class="no" onclick="selectSymptom(this, 'diarrhea', 'no')">No</button>
-                            </div>
-                        </li>
-                        <li class="symptom-item">
-                            <span>Dizziness</span>
-                            <div class="symptom-buttons">
-                                <button class="yes" onclick="selectSymptom(this, 'dizziness', 'yes')">Yes</button>
-                                <button class="no" onclick="selectSymptom(this, 'dizziness', 'no')">No</button>
-                            </div>
-                        </li>
-                        <li class="symptom-item">
-                            <span>Loss of Appetite</span>
-                            <div class="symptom-buttons">
-                                <button class="yes" onclick="selectSymptom(this, 'lossOfAppetite', 'yes')">Yes</button>
-                                <button class="no" onclick="selectSymptom(this, 'lossOfAppetite', 'no')">No</button>
-                            </div>
-                        </li>
-                        <li class="symptom-item">
-                            <span>Abdominal Pain</span>
-                            <div class="symptom-buttons">
-                                <button class="yes" onclick="selectSymptom(this, 'abdominalPain', 'yes')">Yes</button>
-                                <button class="no" onclick="selectSymptom(this, 'abdominalPain', 'no')">No</button>
                             </div>
                         </li>
                         <li class="symptom-item">
@@ -481,7 +550,7 @@
         </div>
     </div>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_NEW_API_KEY_HERE&libraries=places"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCI_RHBNmNwpNpDoUPyZFNPNWUYQmr4QJk&libraries=places"></script>
 
     <script>
         // Function to handle symptom selection
@@ -580,6 +649,9 @@
             const radius = document.getElementById('radius-slider').value;
             const location = window.selectedLocation;
 
+            // Show loading indicator
+            document.getElementById('loading').style.display = 'block';
+
             // Example of how to use Google Places API to search for hospitals
             const service = new google.maps.places.PlacesService(document.createElement('div'));
             
@@ -590,8 +662,13 @@
             };
 
             service.nearbySearch(request, (results, status) => {
+                // Hide loading indicator
+                document.getElementById('loading').style.display = 'none';
+
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
                     displayResults(results);
+                } else {
+                    alert('No hospitals found. Please try a different location or radius.');
                 }
             });
         }
@@ -602,23 +679,65 @@
             hospitalList.innerHTML = '';
 
             hospitals.forEach(hospital => {
-                // Generate random wait time for demo purposes
-                const waitTime = Math.floor(Math.random() * 120) + 10;
-                
-                const hospitalCard = `
-                    <div class="hospital-card">
-                        <div class="hospital-info">
-                            <h3>${hospital.name}</h3>
-                            <p>${hospital.vicinity}</p>
-                            <span class="distance">${calculateDistance(hospital.geometry.location)} miles away</span>
-                        </div>
-                        <div class="wait-time">
-                            ${waitTime} min wait
-                        </div>
-                    </div>
-                `;
-                hospitalList.innerHTML += hospitalCard;
+                getTravelTime(window.selectedLocation, hospital.geometry.location)
+                    .then(travelInfo => {
+                        const waitTime = Math.floor(Math.random() * 120) + 10;
+                        const totalMinutes = waitTime + travelInfo.durationValue;
+                        
+                        // Calculate the circle animation based on travel time
+                        const strokeDashoffset = calculateStrokeDashoffset(travelInfo.durationValue);
+                        
+                        const hospitalCard = `
+                            <div class="hospital-card">
+                                <div class="hospital-info">
+                                    <h3>${hospital.name}</h3>
+                                    <p>${hospital.vicinity}</p>
+                                    <p>Contact: ${hospital.formatted_phone_number || 'Not available'}</p>
+                                    <div class="travel-info">
+                                        <div class="clock-animation">
+                                            <i class="fas fa-clock"></i>
+                                            <svg class="clock-timer" viewBox="0 0 40 40">
+                                                <circle class="clock-circle" cx="20" cy="20" r="15" 
+                                                    style="animation: none; stroke-dashoffset: ${strokeDashoffset}"/>
+                                            </svg>
+                                            <span class="time-display">${travelInfo.durationValue}'</span>
+                                        </div>
+                                        <div class="time-details">
+                                            <p class="distance">${calculateDistance(hospital.geometry.location)} miles away</p>
+                                            <p class="travel-time">Drive time: ${travelInfo.duration}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="wait-info">
+                                    <div class="wait-time">
+                                        <span class="time">${waitTime}</span>
+                                        <span class="unit">min wait</span>
+                                    </div>
+                                    <div class="total-time">
+                                        Total time: ${totalMinutes} min
+                                    </div>
+                                </div>
+                                <div class="actions">
+                                    <button onclick="showDirections('${hospital.place_id}')" class="direction-btn">
+                                        <i class="fas fa-directions"></i> Get Directions
+                                    </button>
+                                    <button onclick="registerAtHospital('${hospital.place_id}')" class="register-btn">
+                                        <i class="fas fa-user-plus"></i> Register Now
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        hospitalList.innerHTML += hospitalCard;
+                    });
             });
+        }
+
+        // Add this helper function to calculate stroke-dashoffset
+        function calculateStrokeDashoffset(minutes) {
+            const circumference = 2 * Math.PI * 15; // r = 15 from the SVG
+            const maxMinutes = 120; // Maximum minutes to show on clock
+            const offset = circumference - (minutes / maxMinutes) * circumference;
+            return offset;
         }
 
         // Calculate distance between two points
@@ -692,6 +811,89 @@
             document.getElementById('mainContent').style.display = 'none';
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
+        }
+
+        // Add this function after initAutocomplete
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const location = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        
+                        // Store location for later use
+                        window.selectedLocation = location;
+
+                        // Convert coordinates to address using Geocoding
+                        const geocoder = new google.maps.Geocoder();
+                        geocoder.geocode({ location: location }, (results, status) => {
+                            if (status === 'OK' && results[0]) {
+                                document.getElementById('location-input').value = results[0].formatted_address;
+                            } else {
+                                alert('Unable to retrieve address. Please enter manually.');
+                            }
+                        });
+                    },
+                    (error) => {
+                        console.error('Error getting location:', error);
+                        alert('Please enable location services or enter your location manually.');
+                    }
+                );
+            } else {
+                alert('Geolocation is not supported by your browser. Please enter your location manually.');
+            }
+        }
+
+        // Add a button for getting current location
+        function addLocationButton() {
+            const locationInput = document.querySelector('.location-input');
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'current-location-btn';
+            button.innerHTML = '<i class="fas fa-crosshairs"></i>';
+            button.onclick = getCurrentLocation;
+            locationInput.appendChild(button);
+        }
+
+        // Update the initialization
+        window.onload = function() {
+            initAutocomplete();
+            addLocationButton();
+            getCurrentLocation(); // Try to get location automatically
+            
+            // Check login state (existing code)
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+            }
+        };
+
+        // Add function to get travel time
+        async function getTravelTime(origin, destination) {
+            const service = new google.maps.DistanceMatrixService();
+            
+            try {
+                const response = await new Promise((resolve, reject) => {
+                    service.getDistanceMatrix({
+                        origins: [origin],
+                        destinations: [destination],
+                        travelMode: 'DRIVING',
+                    }, (response, status) => {
+                        if (status === 'OK') resolve(response);
+                        else reject(status);
+                    });
+                });
+
+                const duration = response.rows[0].elements[0].duration.text;
+                const durationValue = Math.ceil(response.rows[0].elements[0].duration.value / 60); // Convert to minutes
+                
+                return { duration, durationValue };
+            } catch (error) {
+                console.error('Error getting travel time:', error);
+                return { duration: 'Unknown', durationValue: 0 };
+            }
         }
     </script>
 </body>

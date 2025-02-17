@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Registration</title>
+    <meta name="description" content="Check ER wait times and register patients online">
+    <meta property="og:title" content="ER Wait Time">
+    <meta property="og:description" content="Find emergency rooms near you and check wait times">
+    <meta property="og:url" content="https://mywaitime.com">
+    <title>ER Wait Time - Login</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body { font-family: Arial, sans-serif; }
@@ -145,404 +149,550 @@
                 text-align: center;
             }
         }
+
+        /* Add new login styles */
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            background: var(--secondary-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header img {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 15px;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 12px 12px 40px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+        }
+
+        .login-button {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .login-button:hover {
+            background: #1976D2;
+        }
+
+        .error-message {
+            color: #f44336;
+            text-align: center;
+            display: none;
+        }
+
+        /* Hide main content initially */
+        .main-content {
+            display: none;
+        }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <!-- Add this section before the existing patient registration form -->
-    <div class="er-wait-section">
-        <div class="er-header">
-            <img src="clock-icon.svg" alt="Clock">
-            <h2>ER Wait Times</h2>
+    <!-- Login Section -->
+    <div class="login-container" id="loginSection">
+        <div class="login-header">
+            <img src="clock-icon.svg" alt="ER Wait Time">
+            <h1>ER Wait Time</h1>
+            <p>Please login to continue</p>
         </div>
+        <form class="login-form" id="loginForm">
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="username" placeholder="Username" required>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+            <p class="error-message" id="errorMessage">Invalid username or password</p>
+            <button type="submit" class="login-button">Login</button>
+        </form>
+    </div>
 
-        <div class="er-search-container">
-            <div class="location-input">
-                <i class="fas fa-map-marker-alt"></i>
-                <input type="text" id="location-input" placeholder="Enter your location">
+    <!-- Main Content (existing content) -->
+    <div class="main-content" id="mainContent">
+        <div class="container">
+            <!-- Add this section before the existing patient registration form -->
+            <div class="er-wait-section">
+                <div class="er-header">
+                    <img src="clock-icon.svg" alt="Clock">
+                    <h2>ER Wait Times</h2>
+                </div>
+
+                <div class="er-search-container">
+                    <div class="location-input">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <input type="text" id="location-input" placeholder="Enter your location">
+                    </div>
+
+                    <div class="radius-container">
+                        <label>Search radius: <span id="radius-value">10</span> miles</label>
+                        <input type="range" class="radius-slider" min="1" max="50" value="10" id="radius-slider">
+                    </div>
+
+                    <button class="search-button" onclick="searchHospitals()">
+                        Find Emergency Rooms
+                    </button>
+                </div>
+
+                <div class="hospital-list" id="hospital-list">
+                    <!-- Hospital results will be dynamically inserted here -->
+                </div>
             </div>
 
-            <div class="radius-container">
-                <label>Search radius: <span id="radius-value">10</span> miles</label>
-                <input type="range" class="radius-slider" min="1" max="50" value="10" id="radius-slider">
-            </div>
+            <h1>Patient Registration</h1>
+            <form id="patientForm">
+                <!-- Patient Name -->
+                <label for="patientName">Patient Name:</label>
+                <input type="text" id="patientName" name="patientName" required>
 
-            <button class="search-button" onclick="searchHospitals()">
-                Find Emergency Rooms
-            </button>
-        </div>
+                <!-- Doctor's Information -->
+                <label for="doctorName">Doctor's Name:</label>
+                <input type="text" id="doctorName" name="doctorName" required>
 
-        <div class="hospital-list" id="hospital-list">
-            <!-- Hospital results will be dynamically inserted here -->
+                <!-- Basic Information -->
+                <label for="age">Age:</label>
+                <input type="number" id="age" name="age" required>
+
+                <label for="sex">Sex:</label>
+                <select id="sex" name="sex" required>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+
+                <label for="dob">Date of Birth:</label>
+                <input type="date" id="dob" name="dob" required>
+
+                <label for="phone">Phone Number:</label>
+                <input type="tel" id="phone" name="phone" required>
+
+                <label for="whatsapp">WhatsApp Number:</label>
+                <input type="tel" id="whatsapp" name="whatsapp">
+
+                <label for="email">Email Address:</label>
+                <input type="email" id="email" name="email" required>
+
+                <!-- Medical History -->
+                <label for="pastMedicalHistory">Past Medical History:</label>
+                <textarea id="pastMedicalHistory" name="pastMedicalHistory" rows="4"></textarea>
+
+                <label for="allergyHistory">Allergy History:</label>
+                <textarea id="allergyHistory" name="allergyHistory" rows="4"></textarea>
+
+                <label for="surgicalHistory">Surgical History:</label>
+                <textarea id="surgicalHistory" name="surgicalHistory" rows="4"></textarea>
+
+                <label for="medicationList">Medication List:</label>
+                <textarea id="medicationList" name="medicationList" rows="4"></textarea>
+
+                <!-- History Tab -->
+                <div class="tabs">
+                    <button type="button" onclick="openTab('symptomsTab')">Main Symptoms</button>
+                </div>
+
+                <div id="symptomsTab" class="tab-content">
+                    <h3>Main Symptoms</h3>
+                    <ul class="symptom-list">
+                        <!-- List of 20 Common Symptoms -->
+                        <li class="symptom-item">
+                            <span>Fever</span>
+                            <div class="symptom-buttons">
+                                <button class="yes" onclick="selectSymptom(this, 'fever', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'fever', 'no')">No</button>
+                            </div>
+                        </li>
+                        <li class="symptom-item">
+                            <span>Cough</span>
+                            <div class="symptom-buttons">
+                                <button class="yes" onclick="selectSymptom(this, 'cough', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'cough', 'no')">No</button>
+                            </div>
+                        </li>
+                        <li class="symptom-item">
+                            <span>Headache</span>
+                            <div class="symptom-buttons">
+                                <button class="yes" onclick="selectSymptom(this, 'headache', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'headache', 'no')">No</button>
+                            </div>
+                        </li>
+                        <li class="symptom-item">
+                            <span>Shortness of Breath</span>
+                            <div class="symptom-buttons">
+                                <button class="yes" onclick="selectSymptom(this, 'shortnessOfBreath', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'shortnessOfBreath', 'no')">No</button>
+                            </div>
+                        </li>
+                        <li class="symptom-item">
+                            <span>Chest Pain</span>
+                            <div class="symptom-buttons">
+                                <button class="yes" onclick="selectSymptom(this, 'chestPain', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'chestPain', 'no')">No</button>
+                            </div>
+                        </li>
+                        <li class="symptom-item">
+                            <span>Fatigue</span>
+                            <div class="symptom-buttons">
+                                <button class="yes" onclick="selectSymptom(this, 'fatigue', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'fatigue', 'no')">No</button>
+                            </div>
+                        </li>
+                        <li class="symptom-item">
+                            <span>Muscle Aches</span>
+                            <div class="symptom-buttons">
+                                <button class="yes" onclick="selectSymptom(this, 'muscleAches', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'muscleAches', 'no')">No</button>
+                            </div>
+                        </li>
+                        <li class="symptom-item">
+                            <span>Sore Throat</span>
+                            <div class="symptom-buttons">
+                                <button class="yes" onclick="selectSymptom(this, 'soreThroat', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'soreThroat', 'no')">No</button>
+                            </div>
+                        </li>
+                        <li class="symptom-item">
+                            <span>Nausea</span>
+                            <div class="symptom-buttons">
+                                <button class="yes" onclick="selectSymptom(this, 'nausea', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'nausea', 'no')">No</button>
+                            </div>
+                        </li>
+                        <li class="symptom-item">
+                            <span>Vomiting</span>
+                            <div class="symptom-buttons">
+                                <button class="yes" onclick="selectSymptom(this, 'vomiting', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'vomiting', 'no')">No</button>
+                            </div>
+                        </li>
+                        <li class="symptom-item">
+                            <span>Diarrhea</span>
+                            <div class="symptom-buttons">
+                                <button class="yes" onclick="selectSymptom(this, 'diarrhea', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'diarrhea', 'no')">No</button>
+                            </div>
+                        </li>
+                        <li class="symptom-item">
+                            <span>Dizziness</span>
+                            <div class="symptom-buttons">
+                                <button class="yes" onclick="selectSymptom(this, 'dizziness', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'dizziness', 'no')">No</button>
+                            </div>
+                        </li>
+                        <li class="symptom-item">
+                            <span>Loss of Appetite</span>
+                            <div class="symptom-buttons">
+                                <button class="yes" onclick="selectSymptom(this, 'lossOfAppetite', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'lossOfAppetite', 'no')">No</button>
+                            </div>
+                        </li>
+                        <li class="symptom-item">
+                            <span>Abdominal Pain</span>
+                            <div class="symptom-buttons">
+                                <button class="yes" onclick="selectSymptom(this, 'abdominalPain', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'abdominalPain', 'no')">No</button>
+                            </div>
+                        </li>
+                        <li class="symptom-item">
+                            <span>Joint Pain</span>
+                            <div class="symptom-buttons">
+                                <button class="yes" onclick="selectSymptom(this, 'jointPain', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'jointPain', 'no')">No</button>
+                            </div>
+                        </li>
+                        <li class="symptom-item">
+                            <span>Rash</span>
+                            <div class="symptom-buttons">
+                                <button class="yes" onclick="selectSymptom(this, 'rash', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'rash', 'no')">No</button>
+                            </div>
+                        </li>
+                        <li class="symptom-item">
+                            <span>Chills</span>
+                            <div class="symptom-buttons">
+                                <button class="yes" onclick="selectSymptom(this, 'chills', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'chills', 'no')">No</button>
+                            </div>
+                        </li>
+                        <li class="symptom-item">
+                            <span>Runny Nose</span>
+                            <div class="symptom-buttons">
+                                <button class="yes" onclick="selectSymptom(this, 'runnyNose', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'runnyNose', 'no')">No</button>
+                            </div>
+                        </li>
+                        <li class="symptom-item">
+                            <span>Sneezing</span>
+                            <div class="symptom-buttons">
+                                <button class="yes" onclick="selectSymptom(this, 'sneezing', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'sneezing', 'no')">No</button>
+                            </div>
+                        </li>
+                        <li class="symptom-item">
+                            <span>Swelling</span>
+                            <div class="symptom-buttons">
+                                <button class="yes" onclick="selectSymptom(this, 'swelling', 'yes')">Yes</button>
+                                <button class="no" onclick="selectSymptom(this, 'swelling', 'no')">No</button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit">Register Patient</button>
+            </form>
         </div>
     </div>
 
-    <h1>Patient Registration</h1>
-    <form id="patientForm">
-        <!-- Patient Name -->
-        <label for="patientName">Patient Name:</label>
-        <input type="text" id="patientName" name="patientName" required>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_NEW_API_KEY_HERE&libraries=places"></script>
 
-        <!-- Doctor's Information -->
-        <label for="doctorName">Doctor's Name:</label>
-        <input type="text" id="doctorName" name="doctorName" required>
+    <script>
+        // Function to handle symptom selection
+        function selectSymptom(button, symptom, response) {
+            // Remove 'selected' class from all buttons in the same symptom item
+            const parent = button.parentElement;
+            const buttons = parent.querySelectorAll('button');
+            buttons.forEach(btn => btn.classList.remove('selected'));
 
-        <!-- Basic Information -->
-        <label for="age">Age:</label>
-        <input type="number" id="age" name="age" required>
+            // Add 'selected' class to the clicked button
+            button.classList.add('selected');
 
-        <label for="sex">Sex:</label>
-        <select id="sex" name="sex" required>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-        </select>
-
-        <label for="dob">Date of Birth:</label>
-        <input type="date" id="dob" name="dob" required>
-
-        <label for="phone">Phone Number:</label>
-        <input type="tel" id="phone" name="phone" required>
-
-        <label for="whatsapp">WhatsApp Number:</label>
-        <input type="tel" id="whatsapp" name="whatsapp">
-
-        <label for="email">Email Address:</label>
-        <input type="email" id="email" name="email" required>
-
-        <!-- Medical History -->
-        <label for="pastMedicalHistory">Past Medical History:</label>
-        <textarea id="pastMedicalHistory" name="pastMedicalHistory" rows="4"></textarea>
-
-        <label for="allergyHistory">Allergy History:</label>
-        <textarea id="allergyHistory" name="allergyHistory" rows="4"></textarea>
-
-        <label for="surgicalHistory">Surgical History:</label>
-        <textarea id="surgicalHistory" name="surgicalHistory" rows="4"></textarea>
-
-        <label for="medicationList">Medication List:</label>
-        <textarea id="medicationList" name="medicationList" rows="4"></textarea>
-
-        <!-- History Tab -->
-        <div class="tabs">
-            <button type="button" onclick="openTab('symptomsTab')">Main Symptoms</button>
-        </div>
-
-        <div id="symptomsTab" class="tab-content">
-            <h3>Main Symptoms</h3>
-            <ul class="symptom-list">
-                <!-- List of 20 Common Symptoms -->
-                <li class="symptom-item">
-                    <span>Fever</span>
-                    <div class="symptom-buttons">
-                        <button class="yes" onclick="selectSymptom(this, 'fever', 'yes')">Yes</button>
-                        <button class="no" onclick="selectSymptom(this, 'fever', 'no')">No</button>
-                    </div>
-                </li>
-                <li class="symptom-item">
-                    <span>Cough</span>
-                    <div class="symptom-buttons">
-                        <button class="yes" onclick="selectSymptom(this, 'cough', 'yes')">Yes</button>
-                        <button class="no" onclick="selectSymptom(this, 'cough', 'no')">No</button>
-                    </div>
-                </li>
-                <li class="symptom-item">
-                    <span>Headache</span>
-                    <div class="symptom-buttons">
-                        <button class="yes" onclick="selectSymptom(this, 'headache', 'yes')">Yes</button>
-                        <button class="no" onclick="selectSymptom(this, 'headache', 'no')">No</button>
-                    </div>
-                </li>
-                <li class="symptom-item">
-                    <span>Shortness of Breath</span>
-                    <div class="symptom-buttons">
-                        <button class="yes" onclick="selectSymptom(this, 'shortnessOfBreath', 'yes')">Yes</button>
-                        <button class="no" onclick="selectSymptom(this, 'shortnessOfBreath', 'no')">No</button>
-                    </div>
-                </li>
-                <li class="symptom-item">
-                    <span>Chest Pain</span>
-                    <div class="symptom-buttons">
-                        <button class="yes" onclick="selectSymptom(this, 'chestPain', 'yes')">Yes</button>
-                        <button class="no" onclick="selectSymptom(this, 'chestPain', 'no')">No</button>
-                    </div>
-                </li>
-                <li class="symptom-item">
-                    <span>Fatigue</span>
-                    <div class="symptom-buttons">
-                        <button class="yes" onclick="selectSymptom(this, 'fatigue', 'yes')">Yes</button>
-                        <button class="no" onclick="selectSymptom(this, 'fatigue', 'no')">No</button>
-                    </div>
-                </li>
-                <li class="symptom-item">
-                    <span>Muscle Aches</span>
-                    <div class="symptom-buttons">
-                        <button class="yes" onclick="selectSymptom(this, 'muscleAches', 'yes')">Yes</button>
-                        <button class="no" onclick="selectSymptom(this, 'muscleAches', 'no')">No</button>
-                    </div>
-                </li>
-                <li class="symptom-item">
-                    <span>Sore Throat</span>
-                    <div class="symptom-buttons">
-                        <button class="yes" onclick="selectSymptom(this, 'soreThroat', 'yes')">Yes</button>
-                        <button class="no" onclick="selectSymptom(this, 'soreThroat', 'no')">No</button>
-                    </div>
-                </li>
-                <li class="symptom-item">
-                    <span>Nausea</span>
-                    <div class="symptom-buttons">
-                        <button class="yes" onclick="selectSymptom(this, 'nausea', 'yes')">Yes</button>
-                        <button class="no" onclick="selectSymptom(this, 'nausea', 'no')">No</button>
-                    </div>
-                </li>
-                <li class="symptom-item">
-                    <span>Vomiting</span>
-                    <div class="symptom-buttons">
-                        <button class="yes" onclick="selectSymptom(this, 'vomiting', 'yes')">Yes</button>
-                        <button class="no" onclick="selectSymptom(this, 'vomiting', 'no')">No</button>
-                    </div>
-                </li>
-                <li class="symptom-item">
-                    <span>Diarrhea</span>
-                    <div class="symptom-buttons">
-                        <button class="yes" onclick="selectSymptom(this, 'diarrhea', 'yes')">Yes</button>
-                        <button class="no" onclick="selectSymptom(this, 'diarrhea', 'no')">No</button>
-                    </div>
-                </li>
-                <li class="symptom-item">
-                    <span>Dizziness</span>
-                    <div class="symptom-buttons">
-                        <button class="yes" onclick="selectSymptom(this, 'dizziness', 'yes')">Yes</button>
-                        <button class="no" onclick="selectSymptom(this, 'dizziness', 'no')">No</button>
-                    </div>
-                </li>
-                <li class="symptom-item">
-                    <span>Loss of Appetite</span>
-                    <div class="symptom-buttons">
-                        <button class="yes" onclick="selectSymptom(this, 'lossOfAppetite', 'yes')">Yes</button>
-                        <button class="no" onclick="selectSymptom(this, 'lossOfAppetite', 'no')">No</button>
-                    </div>
-                </li>
-                <li class="symptom-item">
-                    <span>Abdominal Pain</span>
-                    <div class="symptom-buttons">
-                        <button class="yes" onclick="selectSymptom(this, 'abdominalPain', 'yes')">Yes</button>
-                        <button class="no" onclick="selectSymptom(this, 'abdominalPain', 'no')">No</button>
-                    </div>
-                </li>
-                <li class="symptom-item">
-                    <span>Joint Pain</span>
-                    <div class="symptom-buttons">
-                        <button class="yes" onclick="selectSymptom(this, 'jointPain', 'yes')">Yes</button>
-                        <button class="no" onclick="selectSymptom(this, 'jointPain', 'no')">No</button>
-                    </div>
-                </li>
-                <li class="symptom-item">
-                    <span>Rash</span>
-                    <div class="symptom-buttons">
-                        <button class="yes" onclick="selectSymptom(this, 'rash', 'yes')">Yes</button>
-                        <button class="no" onclick="selectSymptom(this, 'rash', 'no')">No</button>
-                    </div>
-                </li>
-                <li class="symptom-item">
-                    <span>Chills</span>
-                    <div class="symptom-buttons">
-                        <button class="yes" onclick="selectSymptom(this, 'chills', 'yes')">Yes</button>
-                        <button class="no" onclick="selectSymptom(this, 'chills', 'no')">No</button>
-                    </div>
-                </li>
-                <li class="symptom-item">
-                    <span>Runny Nose</span>
-                    <div class="symptom-buttons">
-                        <button class="yes" onclick="selectSymptom(this, 'runnyNose', 'yes')">Yes</button>
-                        <button class="no" onclick="selectSymptom(this, 'runnyNose', 'no')">No</button>
-                    </div>
-                </li>
-                <li class="symptom-item">
-                    <span>Sneezing</span>
-                    <div class="symptom-buttons">
-                        <button class="yes" onclick="selectSymptom(this, 'sneezing', 'yes')">Yes</button>
-                        <button class="no" onclick="selectSymptom(this, 'sneezing', 'no')">No</button>
-                    </div>
-                </li>
-                <li class="symptom-item">
-                    <span>Swelling</span>
-                    <div class="symptom-buttons">
-                        <button class="yes" onclick="selectSymptom(this, 'swelling', 'yes')">Yes</button>
-                        <button class="no" onclick="selectSymptom(this, 'swelling', 'no')">No</button>
-                    </div>
-                </li>
-            </ul>
-        </div>
-
-        <!-- Submit Button -->
-        <button type="submit">Register Patient</button>
-    </form>
-</div>
-
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY&libraries=places"></script>
-
-<script>
-    // Function to handle symptom selection
-    function selectSymptom(button, symptom, response) {
-        // Remove 'selected' class from all buttons in the same symptom item
-        const parent = button.parentElement;
-        const buttons = parent.querySelectorAll('button');
-        buttons.forEach(btn => btn.classList.remove('selected'));
-
-        // Add 'selected' class to the clicked button
-        button.classList.add('selected');
-
-        // Store the response in a data attribute (optional)
-        parent.parentElement.setAttribute('data-response', response);
-    }
-
-    // Function to open tabs
-    function openTab(tabName) {
-        var tabContent = document.getElementsByClassName("tab-content");
-        for (var i = 0; i < tabContent.length; i++) {
-            tabContent[i].style.display = "none";
+            // Store the response in a data attribute (optional)
+            parent.parentElement.setAttribute('data-response', response);
         }
-        document.getElementById(tabName).style.display = "block";
-    }
 
-    // Handle form submission
-    document.getElementById("patientForm").addEventListener("submit", function(event) {
-        event.preventDefault();
-        const formData = new FormData(event.target);
-        const data = Object.fromEntries(formData.entries());
-
-        // Collect symptom responses
-        const symptoms = [];
-        const symptomItems = document.querySelectorAll('.symptom-item');
-        symptomItems.forEach(item => {
-            const symptomName = item.querySelector('span').innerText;
-            const response = item.getAttribute('data-response') || 'no'; // Default to 'no' if not selected
-            symptoms.push({ symptom: symptomName, response: response });
-        });
-
-        // Add symptoms to the data object
-        data.symptoms = symptoms;
-
-        // Here you would link to your API
-        fetch('https://your-api-endpoint.com/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-            alert('Patient registered successfully!');
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-            alert('Error registering patient.');
-        });
-    });
-
-    // Initialize Google Places Autocomplete
-    function initAutocomplete() {
-        const input = document.getElementById('location-input');
-        const autocomplete = new google.maps.places.Autocomplete(input, {
-            types: ['geocode']
-        });
-        
-        autocomplete.addListener('place_changed', function() {
-            const place = autocomplete.getPlace();
-            if (place.geometry) {
-                // Store the selected coordinates for later use
-                window.selectedLocation = {
-                    lat: place.geometry.location.lat(),
-                    lng: place.geometry.location.lng()
-                };
+        // Function to open tabs
+        function openTab(tabName) {
+            var tabContent = document.getElementsByClassName("tab-content");
+            for (var i = 0; i < tabContent.length; i++) {
+                tabContent[i].style.display = "none";
             }
-        });
-    }
-
-    // Update radius value display
-    const radiusSlider = document.getElementById('radius-slider');
-    const radiusValue = document.getElementById('radius-value');
-    radiusSlider.addEventListener('input', function() {
-        radiusValue.textContent = this.value;
-    });
-
-    // Search for hospitals
-    function searchHospitals() {
-        if (!window.selectedLocation) {
-            alert('Please select a location first');
-            return;
+            document.getElementById(tabName).style.display = "block";
         }
 
-        const radius = document.getElementById('radius-slider').value;
-        const location = window.selectedLocation;
+        // Handle form submission
+        document.getElementById("patientForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
 
-        // Example of how to use Google Places API to search for hospitals
-        const service = new google.maps.places.PlacesService(document.createElement('div'));
+            // Collect symptom responses
+            const symptoms = [];
+            const symptomItems = document.querySelectorAll('.symptom-item');
+            symptomItems.forEach(item => {
+                const symptomName = item.querySelector('span').innerText;
+                const response = item.getAttribute('data-response') || 'no'; // Default to 'no' if not selected
+                symptoms.push({ symptom: symptomName, response: response });
+            });
+
+            // Add symptoms to the data object
+            data.symptoms = symptoms;
+
+            // Here you would link to your API
+            fetch('https://your-api-endpoint.com/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                alert('Patient registered successfully!');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Error registering patient.');
+            });
+        });
+
+        // Initialize Google Places Autocomplete
+        function initAutocomplete() {
+            const input = document.getElementById('location-input');
+            const autocomplete = new google.maps.places.Autocomplete(input, {
+                types: ['geocode']
+            });
+            
+            autocomplete.addListener('place_changed', function() {
+                const place = autocomplete.getPlace();
+                if (place.geometry) {
+                    // Store the selected coordinates for later use
+                    window.selectedLocation = {
+                        lat: place.geometry.location.lat(),
+                        lng: place.geometry.location.lng()
+                    };
+                }
+            });
+        }
+
+        // Update radius value display
+        const radiusSlider = document.getElementById('radius-slider');
+        const radiusValue = document.getElementById('radius-value');
+        radiusSlider.addEventListener('input', function() {
+            radiusValue.textContent = this.value;
+        });
+
+        // Search for hospitals
+        function searchHospitals() {
+            if (!window.selectedLocation) {
+                alert('Please select a location first');
+                return;
+            }
+
+            const radius = document.getElementById('radius-slider').value;
+            const location = window.selectedLocation;
+
+            // Example of how to use Google Places API to search for hospitals
+            const service = new google.maps.places.PlacesService(document.createElement('div'));
+            
+            const request = {
+                location: new google.maps.LatLng(location.lat, location.lng),
+                radius: radius * 1609.34, // Convert miles to meters
+                type: ['hospital']
+            };
+
+            service.nearbySearch(request, (results, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    displayResults(results);
+                }
+            });
+        }
+
+        // Display hospital results
+        function displayResults(hospitals) {
+            const hospitalList = document.getElementById('hospital-list');
+            hospitalList.innerHTML = '';
+
+            hospitals.forEach(hospital => {
+                // Generate random wait time for demo purposes
+                const waitTime = Math.floor(Math.random() * 120) + 10;
+                
+                const hospitalCard = `
+                    <div class="hospital-card">
+                        <div class="hospital-info">
+                            <h3>${hospital.name}</h3>
+                            <p>${hospital.vicinity}</p>
+                            <span class="distance">${calculateDistance(hospital.geometry.location)} miles away</span>
+                        </div>
+                        <div class="wait-time">
+                            ${waitTime} min wait
+                        </div>
+                    </div>
+                `;
+                hospitalList.innerHTML += hospitalCard;
+            });
+        }
+
+        // Calculate distance between two points
+        function calculateDistance(hospitalLocation) {
+            const userLocation = window.selectedLocation;
+            const R = 3959; // Earth's radius in miles
+            const lat1 = userLocation.lat * Math.PI / 180;
+            const lat2 = hospitalLocation.lat() * Math.PI / 180;
+            const lon1 = userLocation.lng * Math.PI / 180;
+            const lon2 = hospitalLocation.lng() * Math.PI / 180;
+
+            const dLat = lat2 - lat1;
+            const dLon = lon2 - lon1;
+
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(lat1) * Math.cos(lat2) *
+                    Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return (R * c).toFixed(1);
+        }
+
+        // Initialize Google Places Autocomplete when the page loads
+        window.onload = initAutocomplete;
+
+        // Add this before your existing JavaScript
         
-        const request = {
-            location: new google.maps.LatLng(location.lat, location.lng),
-            radius: radius * 1609.34, // Convert miles to meters
-            type: ['hospital']
+        // Demo credentials (In production, these should be handled securely on a server)
+        const validCredentials = {
+            username: 'admin',
+            password: 'ertime911'
         };
 
-        service.nearbySearch(request, (results, status) => {
-            if (status === google.maps.places.PlacesServiceStatus.OK) {
-                displayResults(results);
+        // Handle login
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (username === validCredentials.username && password === validCredentials.password) {
+                // Store login state
+                sessionStorage.setItem('isLoggedIn', 'true');
+                
+                // Show main content and hide login
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                
+                // Clear error message if it was shown
+                errorMessage.style.display = 'none';
+            } else {
+                // Show error message
+                errorMessage.style.display = 'block';
+                // Clear password field
+                document.getElementById('password').value = '';
             }
         });
-    }
 
-    // Display hospital results
-    function displayResults(hospitals) {
-        const hospitalList = document.getElementById('hospital-list');
-        hospitalList.innerHTML = '';
-
-        hospitals.forEach(hospital => {
-            // Generate random wait time for demo purposes
-            const waitTime = Math.floor(Math.random() * 120) + 10;
-            
-            const hospitalCard = `
-                <div class="hospital-card">
-                    <div class="hospital-info">
-                        <h3>${hospital.name}</h3>
-                        <p>${hospital.vicinity}</p>
-                        <span class="distance">${calculateDistance(hospital.geometry.location)} miles away</span>
-                    </div>
-                    <div class="wait-time">
-                        ${waitTime} min wait
-                    </div>
-                </div>
-            `;
-            hospitalList.innerHTML += hospitalCard;
+        // Check login state on page load
+        window.addEventListener('load', function() {
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+            }
         });
-    }
 
-    // Calculate distance between two points
-    function calculateDistance(hospitalLocation) {
-        const userLocation = window.selectedLocation;
-        const R = 3959; // Earth's radius in miles
-        const lat1 = userLocation.lat * Math.PI / 180;
-        const lat2 = hospitalLocation.lat() * Math.PI / 180;
-        const lon1 = userLocation.lng * Math.PI / 180;
-        const lon2 = hospitalLocation.lng() * Math.PI / 180;
-
-        const dLat = lat2 - lat1;
-        const dLon = lon2 - lon1;
-
-        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(lat1) * Math.cos(lat2) *
-                Math.sin(dLon/2) * Math.sin(dLon/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return (R * c).toFixed(1);
-    }
-
-    // Initialize Google Places Autocomplete when the page loads
-    window.onload = initAutocomplete;
-</script>
-
+        // Add logout functionality
+        function logout() {
+            sessionStorage.removeItem('isLoggedIn');
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+    </script>
 </body>
 </html>

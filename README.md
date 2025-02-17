@@ -23,4 +23,4 @@ A modern web application that shows emergency room wait times and allows patient
 - CSS3
 - JavaScript
 - Google Maps API
-- Google Places API
+- Google Places API 

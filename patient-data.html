@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Registration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --secondary-color: #FFF;
+            --text-color: #333;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .header {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .hospital-info {
+            color: var(--primary-color);
+            font-size: 1.1em;
+            margin: 10px 0;
+        }
+
+        .form-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+        }
+
+        .symptom-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 10px;
+        }
+
+        .symptom-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .symptom-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .symptom-buttons button {
+            padding: 5px 15px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+        }
+
+        .symptom-buttons .yes {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .symptom-buttons .no {
+            background: #f44336;
+            color: white;
+        }
+
+        .symptom-buttons button.selected {
+            opacity: 1;
+            box-shadow: 0 0 0 2px #000;
+        }
+
+        .submit-button {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .submit-button:hover {
+            background: #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Patient Registration</h1>
+            <div id="hospitalInfo" class="hospital-info"></div>
+        </div>
+
+        <form id="patientForm">
+            <!-- Basic Information -->
+            <div class="form-section">
+                <h3>Personal Information</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="patientName">Full Name:</label>
+                        <input type="text" id="patientName" name="patientName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" name="age" required min="0" max="120">
+                    </div>
+                    <div class="form-group">
+                        <label for="sex">Sex:</label>
+                        <select id="sex" name="sex" required>
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number:</label>
+                        <input type="tel" id="phone" name="phone" required pattern="[0-9]{10}">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medical History -->
+            <div class="form-section">
+                <h3>Medical History</h3>
+                <div class="form-group">
+                    <label for="pastMedicalHistory">Past Medical History:</label>
+                    <textarea id="pastMedicalHistory" name="pastMedicalHistory" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="allergyHistory">Allergy History:</label>
+                    <textarea id="allergyHistory" name="allergyHistory" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="medicationList">Current Medications:</label>
+                    <textarea id="medicationList" name="medicationList" rows="4"></textarea>
+                </div>
+            </div>
+
+            <!-- Symptoms Section -->
+            <div class="form-section">
+                <h3>Current Symptoms</h3>
+                <div id="symptomList" class="symptom-list">
+                    <!-- Symptoms will be populated here -->
+                </div>
+            </div>
+
+            <button type="submit" class="submit-button">Register Patient</button>
+        </form>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        // Check if user is logged in
+        if (!sessionStorage.getItem('isLoggedIn')) {
+            window.location.href = 'index.html';
+        }
+
+        // Get selected hospital info
+        const hospitalInfo = JSON.parse(sessionStorage.getItem('selectedHospital') || '{}');
+        if (!hospitalInfo.id || !hospitalInfo.name) {
+            alert('No hospital selected. Redirecting to hospital selection.');
+            window.location.href = 'index.html';
+        }
+        
+        document.getElementById('hospitalInfo').innerHTML = `
+            <p><i class="fas fa-hospital"></i> Registering at: ${hospitalInfo.name}</p>
+        `;
+
+        // Populate symptoms
+        async function populateSymptoms() {
+            try {
+                const response = await fetch(`https://api.github.com/repos/${config.REPO_OWNER}/${config.REPO_NAME}/contents/data.json`, {
+                    headers: {
+                        'Authorization': `token ${config.GITHUB_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                const data = await response.json();
+                const configData = JSON.parse(atob(data.content));
+                const symptoms = configData.symptoms;
+
+                const symptomList = document.getElementById('symptomList');
+                symptomList.innerHTML = symptoms.map(symptom => `
+                    <div class="symptom-item" data-response="no">
+                        <span>${symptom}</span>
+                        <div class="symptom-buttons">
+                            <button type="button" class="yes" onclick="selectSymptom(this, 'yes')">Yes</button>
+                            <button type="button" class="no selected" onclick="selectSymptom(this, 'no')">No</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading symptoms:', error);
+                alert('Error loading symptoms. Please try again.');
+            }
+        }
+
+        // Handle symptom selection
+        function selectSymptom(button, response) {
+            const symptomItem = button.closest('.symptom-item');
+            const buttons = symptomItem.querySelectorAll('button');
+            
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
+            symptomItem.setAttribute('data-response', response);
+        }
+
+        // Handle form submission
+        document.getElementById('patientForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            try {
+                const formData = new FormData(event.target);
+                const patientData = {
+                    ...Object.fromEntries(formData.entries()),
+                    hospitalId: hospitalInfo.id,
+                    hospitalName: hospitalInfo.name,
+                    timestamp: new Date().toISOString(),
+                    id: `patient_${Date.now()}`
+                };
+
+                // Collect symptoms
+                const symptoms = [];
+                document.querySelectorAll('.symptom-item').forEach(item => {
+                    const symptomName = item.querySelector('span').textContent;
+                    const response = item.getAttribute('data-response') || 'no';
+                    symptoms.push({ symptom: symptomName, response });
+                });
+                patientData.symptoms = symptoms;
+
+                // Load current data
+                const response = await fetch(`https://api.github.com/repos/${config.REPO_OWNER}/${config.REPO_NAME}/contents/data.json`, {
+                    headers: {
+                        'Authorization': `token ${config.GITHUB_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                const data = await response.json();
+                const currentData = JSON.parse(atob(data.content));
+                
+                // Add new patient
+                currentData.patients.push(patientData);
+                
+                // Save updated data
+                const saveResponse = await fetch(`https://api.github.com/repos/${config.REPO_OWNER}/${config.REPO_NAME}/contents/data.json`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${config.GITHUB_TOKEN}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: 'Add patient registration',
+                        content: btoa(JSON.stringify(currentData, null, 2)),
+                        sha: data.sha
+                    })
+                });
+
+                if (saveResponse.ok) {
+                    alert('Patient registered successfully!');
+                    window.close();
+                } else {
+                    throw new Error('Failed to save patient data');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Registration failed. Please try again.');
+            }
+        });
+
+        // Initialize symptoms on load
+        populateSymptoms();
+    </script>
+</body>
+</html> 

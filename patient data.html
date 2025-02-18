@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Registration</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        label { display: block; margin-top: 10px; }
+        input, textarea, select { width: 100%; padding: 8px; margin-top: 5px; }
+        button { margin-top: 20px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .symptom-list { list-style-type: none; padding: 0; }
+        .symptom-item { margin-bottom: 15px; display: flex; align-items: center; }
+        .symptom-item span { flex: 1; }
+        .symptom-buttons { display: flex; gap: 10px; }
+        .symptom-buttons button { padding: 8px 16px; border-radius: 20px; cursor: pointer; border: 2px solid transparent; }
+        .symptom-buttons button.yes { background-color: #4CAF50; color: white; }
+        .symptom-buttons button.no { background-color: #f44336; color: white; }
+        .symptom-buttons button.selected { border-color: #000; opacity: 0.8; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Patient Registration</h1>
+    <form id="patientForm">
+        <!-- Patient Name -->
+        <label for="patientName">Patient Name:</label>
+        <input type="text" id="patientName" name="patientName" required>
+
+        <!-- Doctor's Information -->
+        <label for="doctorName">Doctor's Name:</label>
+        <input type="text" id="doctorName" name="doctorName" required>
+
+        <!-- Basic Information -->
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required>
+
+        <label for="sex">Sex:</label>
+        <select id="sex" name="sex" required>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+        </select>
+
+        <label for="dob">Date of Birth:</label>
+        <input type="date" id="dob" name="dob" required>
+
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone" name="phone" required>
+
+        <label for="whatsapp">WhatsApp Number:</label>
+        <input type="tel" id="whatsapp" name="whatsapp">
+
+        <label for="email">Email Address:</label>
+        <input type="email" id="email" name="email" required>
+
+        <!-- Medical History -->
+        <label for="pastMedicalHistory">Past Medical History:</label>
+        <textarea id="pastMedicalHistory" name="pastMedicalHistory" rows="4"></textarea>
+
+        <label for="allergyHistory">Allergy History:</label>
+        <textarea id="allergyHistory" name="allergyHistory" rows="4"></textarea>
+
+        <label for="surgicalHistory">Surgical History:</label>
+        <textarea id="surgicalHistory" name="surgicalHistory" rows="4"></textarea>
+
+        <label for="medicationList">Medication List:</label>
+        <textarea id="medicationList" name="medicationList" rows="4"></textarea>
+
+        <!-- History Tab -->
+        <div class="tabs">
+            <button type="button" onclick="openTab('symptomsTab')">Main Symptoms</button>
+        </div>
+
+        <div id="symptomsTab" class="tab-content">
+            <h3>Main Symptoms</h3>
+            <ul class="symptom-list">
+                <!-- List of 20 Common Symptoms -->
+                <li class="symptom-item">
+                    <span>Fever</span>
+                    <div class="symptom-buttons">
+                        <button class="yes" onclick="selectSymptom(this, 'fever', 'yes')">Yes</button>
+                        <button class="no" onclick="selectSymptom(this, 'fever', 'no')">No</button>
+                    </div>
+                </li>
+                <li class="symptom-item">
+                    <span>Cough</span>
+                    <div class="symptom-buttons">
+                        <button class="yes" onclick="selectSymptom(this, 'cough', 'yes')">Yes</button>
+                        <button class="no" onclick="selectSymptom(this, 'cough', 'no')">No</button>
+                    </div>
+                </li>
+                <li class="symptom-item">
+                    <span>Headache</span>
+                    <div class="symptom-buttons">
+                        <button class="yes" onclick="selectSymptom(this, 'headache', 'yes')">Yes</button>
+                        <button class="no" onclick="selectSymptom(this, 'headache', 'no')">No</button>
+                    </div>
+                </li>
+                <li class="symptom-item">
+                    <span>Shortness of Breath</span>
+                    <div class="symptom-buttons">
+                        <button class="yes" onclick="selectSymptom(this, 'shortnessOfBreath', 'yes')">Yes</button>
+                        <button class="no" onclick="selectSymptom(this, 'shortnessOfBreath', 'no')">No</button>
+                    </div>
+                </li>
+                <li class="symptom-item">
+                    <span>Chest Pain</span>
+                    <div class="symptom-buttons">
+                        <button class="yes" onclick="selectSymptom(this, 'chestPain', 'yes')">Yes</button>
+                        <button class="no" onclick="selectSymptom(this, 'chestPain', 'no')">No</button>
+                    </div>
+                </li>
+                <li class="symptom-item">
+                    <span>Fatigue</span>
+                    <div class="symptom-buttons">
+                        <button class="yes" onclick="selectSymptom(this, 'fatigue', 'yes')">Yes</button>
+                        <button class="no" onclick="selectSymptom(this, 'fatigue', 'no')">No</button>
+                    </div>
+                </li>
+                <li class="symptom-item">
+                    <span>Muscle Aches</span>
+                    <div class="symptom-buttons">
+                        <button class="yes" onclick="selectSymptom(this, 'muscleAches', 'yes')">Yes</button>
+                        <button class="no" onclick="selectSymptom(this, 'muscleAches', 'no')">No</button>
+                    </div>
+                </li>
+                <li class="symptom-item">
+                    <span>Sore Throat</span>
+                    <div class="symptom-buttons">
+                        <button class="yes" onclick="selectSymptom(this, 'soreThroat', 'yes')">Yes</button>
+                        <button class="no" onclick="selectSymptom(this, 'soreThroat', 'no')">No</button>
+                    </div>
+                </li>
+                <li class="symptom-item">
+                    <span>Nausea</span>
+                    <div class="symptom-buttons">
+                        <button class="yes" onclick="selectSymptom(this, 'nausea', 'yes')">Yes</button>
+                        <button class="no" onclick="selectSymptom(this, 'nausea', 'no')">No</button>
+                    </div>
+                </li>
+                <li class="symptom-item">
+                    <span>Vomiting</span>
+                    <div class="symptom-buttons">
+                        <button class="yes" onclick="selectSymptom(this, 'vomiting', 'yes')">Yes</button>
+                        <button class="no" onclick="selectSymptom(this, 'vomiting', 'no')">No</button>
+                    </div>
+                </li>
+                <li class="symptom-item">
+                    <span>Diarrhea</span>
+                    <div class="symptom-buttons">
+                        <button class="yes" onclick="selectSymptom(this, 'diarrhea', 'yes')">Yes</button>
+                        <button class="no" onclick="selectSymptom(this, 'diarrhea', 'no')">No</button>
+                    </div>
+                </li>
+                <li class="symptom-item">
+                    <span>Dizziness</span>
+                    <div class="symptom-buttons">
+                        <button class="yes" onclick="selectSymptom(this, 'dizziness', 'yes')">Yes</button>
+                        <button class="no" onclick="selectSymptom(this, 'dizziness', 'no')">No</button>
+                    </div>
+                </li>
+                <li class="symptom-item">
+                    <span>Loss of Appetite</span>
+                    <div class="symptom-buttons">
+                        <button class="yes" onclick="selectSymptom(this, 'lossOfAppetite', 'yes')">Yes</button>
+                        <button class="no" onclick="selectSymptom(this, 'lossOfAppetite', 'no')">No</button>
+                    </div>
+                </li>
+                <li class="symptom-item">
+                    <span>Abdominal Pain</span>
+                    <div class="symptom-buttons">
+                        <button class="yes" onclick="selectSymptom(this, 'abdominalPain', 'yes')">Yes</button>
+                        <button class="no" onclick="selectSymptom(this, 'abdominalPain', 'no')">No</button>
+                    </div>
+                </li>
+                <li class="symptom-item">
+                    <span>Joint Pain</span>
+                    <div class="symptom-buttons">
+                        <button class="yes" onclick="selectSymptom(this, 'jointPain', 'yes')">Yes</button>
+                        <button class="no" onclick="selectSymptom(this, 'jointPain', 'no')">No</button>
+                    </div>
+                </li>
+                <li class="symptom-item">
+                    <span>Rash</span>
+                    <div class="symptom-buttons">
+                        <button class="yes" onclick="selectSymptom(this, 'rash', 'yes')">Yes</button>
+                        <button class="no" onclick="selectSymptom(this, 'rash', 'no')">No</button>
+                    </div>
+                </li>
+                <li class="symptom-item">
+                    <span>Chills</span>
+                    <div class="symptom-buttons">
+                        <button class="yes" onclick="selectSymptom(this, 'chills', 'yes')">Yes</button>
+                        <button class="no" onclick="selectSymptom(this, 'chills', 'no')">No</button>
+                    </div>
+                </li>
+                <li class="symptom-item">
+                    <span>Runny Nose</span>
+                    <div class="symptom-buttons">
+                        <button class="yes" onclick="selectSymptom(this, 'runnyNose', 'yes')">Yes</button>
+                        <button class="no" onclick="selectSymptom(this, 'runnyNose', 'no')">No</button>
+                    </div>
+                </li>
+                <li class="symptom-item">
+                    <span>Sneezing</span>
+                    <div class="symptom-buttons">
+                        <button class="yes" onclick="selectSymptom(this, 'sneezing', 'yes')">Yes</button>
+                        <button class="no" onclick="selectSymptom(this, 'sneezing', 'no')">No</button>
+                    </div>
+                </li>
+                <li class="symptom-item">
+                    <span>Swelling</span>
+                    <div class="symptom-buttons">
+                        <button class="yes" onclick="selectSymptom(this, 'swelling', 'yes')">Yes</button>
+                        <button class="no" onclick="selectSymptom(this, 'swelling', 'no')">No</button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit">Register Patient</button>
+    </form>
+</div>
+
+<script>
+    // Function to handle symptom selection
+    function selectSymptom(button, symptom, response) {
+        // Remove 'selected' class from all buttons in the same symptom item
+        const parent = button.parentElement;
+        const buttons = parent.querySelectorAll('button');
+        buttons.forEach(btn => btn.classList.remove('selected'));
+
+        // Add 'selected' class to the clicked button
+        button.classList.add('selected');
+
+        // Store the response in a data attribute (optional)
+        parent.parentElement.setAttribute('data-response', response);
+    }
+
+    // Function to open tabs
+    function openTab(tabName) {
+        var tabContent = document.getElementsByClassName("tab-content");
+        for (var i = 0; i < tabContent.length; i++) {
+            tabContent[i].style.display = "none";
+        }
+        document.getElementById(tabName).style.display = "block";
+    }
+
+    // Handle form submission
+    document.getElementById("patientForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries());
+
+        // Collect symptom responses
+        const symptoms = [];
+        const symptomItems = document.querySelectorAll('.symptom-item');
+        symptomItems.forEach(item => {
+            const symptomName = item.querySelector('span').innerText;
+            const response = item.getAttribute('data-response') || 'no'; // Default to 'no' if not selected
+            symptoms.push({ symptom: symptomName, response: response });
+        });
+
+        // Add symptoms to the data object
+        data.symptoms = symptoms;
+
+        // Here you would link to your API
+        fetch('https://your-api-endpoint.com/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            alert('Patient registered successfully!');
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('Error registering patient.');
+        });
+    });
+</script>
+
+</body>
+</html>

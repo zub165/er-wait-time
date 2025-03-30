@@ -1,58 +1,54 @@
-Privacy Policy
-
 Effective Date: March 25, 2025
-Project: ER Wait Time (https://github.com/zub165/er-wait-time)
+Project: ER Wait Time
+1. Introduction
+This Privacy Policy outlines how the ER Wait Time application (“we”, “our”, or “the app”) collects, uses, and protects any personal or non-personal information provided while using the app. By using the app, you agree to the practices described in this policy.
 
-This Privacy Policy outlines how the ER Wait Time application ("we", "our", or "the app") collects, uses, and protects any personal or non-personal information that users provide while using the app. By using the app, you consent to the data practices described in this policy.
+2. Information We Collect
+🔹 Non-Personal Information
 
-1. Information We Collect
+We may collect anonymized data, including:
 
-Non-Personal Information
-We may collect anonymized data related to:
-
-Application performance (e.g. crash reports, loading times)
+App performance metrics (e.g., crash logs, loading times)
 Feature usage statistics
-User device specifications (e.g. OS version, screen resolution)
-Location Data (if enabled)
-If granted permission, the app may use your device’s location to:
+Device specifications (e.g., OS version, screen resolution)
+🔹 Location Data (if enabled)
 
-Show the nearest emergency rooms
-Provide estimated wait times based on proximity
-We do not store or transmit location data to any external servers unless explicitly stated.
+If permission is granted, the app may access your location to:
 
-2. How We Use Your Information
+Show nearby emergency rooms
+Estimate ER wait times based on proximity
+⚠️ We do not store or transmit your location data to any external servers unless explicitly stated.
+3. How We Use Your Information
+We use collected data to:
 
-The data collected is used to:
-
-Improve the functionality and performance of the app
+Improve app performance and reliability
 Enhance user experience
-Optimize location-based features (if enabled)
-We do not sell, rent, or share any data with third parties for advertising or marketing purposes.
+Optimize location-based services
+We do not sell, rent, or share user data with third parties for marketing or advertising purposes.
 
-3. Third-Party Services
-
-Our app may integrate with third-party APIs or tools (e.g., Google Maps for location). Please refer to their respective privacy policies:
+4. Third-Party Services
+We may use third-party APIs such as:
 
 Google Maps Platform
-4. Data Storage
+Please refer to Google’s Privacy Policy for more details.
+5. Data Storage
+All data is securely handled following industry best practices.
+We do not collect or store personally identifiable information unless explicitly requested and agreed to by the user.
 
-All user data is stored securely and handled according to industry best practices. No personally identifiable information is stored or collected unless explicitly requested and agreed upon by the user.
+6. Children’s Privacy
+This app is not intended for users under the age of 13.
+We do not knowingly collect any data from children.
 
-5. Children's Privacy
+7. Your Rights
+You have the right to:
 
-This app is not intended for use by individuals under the age of 13. We do not knowingly collect data from children.
+Review any data that may be stored
+Request deletion of personal data (if collected in future versions)
+Revoke location/data permissions at any time via device settings
+8. Updates to This Policy
+This Privacy Policy may be updated periodically.
+All changes will be posted on the GitHub repository with a revised effective date.
 
-6. Your Rights
-
-As a user, you have the right to:
-
-Review what data is stored
-Request data deletion (if any personally identifiable data is collected in future versions)
-Revoke location or data permissions from your device settings
-7. Changes to this Privacy Policy
-
-We may update this policy from time to time. All changes will be published on this GitHub page with an updated effective date.
-
-8. Contact Us
-
-If you have any questions, feedback, or support requests, please contact us through the GitHub Issues page.
+9. Contact Us
+For questions, support, or feedback:
+Please open an issue on the GitHub Issues Page

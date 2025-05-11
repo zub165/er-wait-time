@@ -72,7 +72,7 @@ We may update this policy periodically. Material changes will be communicated wi
 
 If you have questions or concerns about this Privacy Policy, please contact us:
 
-**Email:** support@ertime.app  
-**Website:** [https://ertime.app](https://ertime.app)
+**Email:** zub165@yahoo.com
+**Website:** https://zub165.github.io/er-wait-time/
 
 ---

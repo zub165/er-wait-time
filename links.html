@@ -175,13 +175,21 @@
         }
 
         .link-card:nth-child(1) {
-            background: var(--primary-gradient);
             animation: slideInLeft 0.6s ease 0.3s both;
         }
 
         .link-card:nth-child(2) {
-            background: var(--secondary-gradient);
             animation: slideInRight 0.6s ease 0.4s both;
+        }
+
+        .link-card:nth-child(3) {
+            background: var(--primary-gradient);
+            animation: slideInLeft 0.6s ease 0.5s both;
+        }
+
+        .link-card:nth-child(4) {
+            background: var(--secondary-gradient);
+            animation: slideInRight 0.6s ease 0.6s both;
         }
 
         @keyframes slideInLeft {
@@ -381,6 +389,24 @@
 
         <div class="content">
             <div class="links-container">
+                <a href="https://play.google.com/store/apps/details?id=com.ertime.er_time_new" class="link-card" target="_blank" rel="noopener" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);">
+                    <div class="icon">🤖</div>
+                    <div class="content-text">
+                        <h3>Download for Android</h3>
+                        <p>Get ERTime101 on Google Play Store</p>
+                    </div>
+                    <div class="arrow">→</div>
+                </a>
+
+                <a href="https://apps.apple.com/us/app/emergency-time/id6743817934" class="link-card" target="_blank" rel="noopener" style="background: linear-gradient(135deg, #007AFF 0%, #0051D5 100%);">
+                    <div class="icon">🍎</div>
+                    <div class="content-text">
+                        <h3>Download for iOS</h3>
+                        <p>Get ERTime101 on Apple App Store</p>
+                    </div>
+                    <div class="arrow">→</div>
+                </a>
+
                 <a href="support.html" class="link-card">
                     <div class="icon">🆘</div>
                     <div class="content-text">
